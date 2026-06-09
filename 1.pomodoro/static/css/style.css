@@ -17,6 +17,34 @@ body {
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #7c6fe3 0%, #9b8eef 50%, #b3a8f5 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 集中時間中の背景放射グロー */
+.app-bg::before {
+  content: '';
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, transparent 68%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.9s ease;
+}
+
+.app-bg.working::before {
+  opacity: 1;
+  animation: bg-radial-pulse 3.5s ease-in-out infinite;
+}
+
+@keyframes bg-radial-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.55; }
+  50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
 }
 
 /* ===== カード ===== */
@@ -85,7 +113,22 @@ body {
   stroke: #7c6fe3;
   stroke-dasharray: 502.65;   /* 2π × 80 ≈ 502.65 */
   stroke-dashoffset: 0;
-  transition: stroke-dashoffset 0.5s linear;
+  transition: stroke-dashoffset 0.5s linear, stroke 0.8s ease;
+}
+
+/* ===== 波紋エフェクト（SVG 内 circle.ripple） ===== */
+.ripple {
+  fill: none;
+  stroke-width: 2.5;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ripple-wave 2.4s ease-out infinite;
+}
+
+@keyframes ripple-wave {
+  0%   { transform: scale(0.65); opacity: 0.6; }
+  100% { transform: scale(1.35); opacity: 0; }
 }
 
 /* タイマー数字 */
