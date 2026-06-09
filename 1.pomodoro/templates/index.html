@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ポモドーロタイマー</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="app-bg">
+    <div class="card">
+      <!-- タイトルバー -->
+      <div class="title-bar">
+        <span class="title-text">ポモドーロタイマー</span>
+        <div class="window-controls">
+          <span>&#8722;</span>
+          <span>&#9633;</span>
+          <span>&#10005;</span>
+        </div>
+      </div>
+
+      <!-- フェーズラベル -->
+      <p class="phase-label" id="phase-label">作業中</p>
+
+      <!-- 円形プログレスバー -->
+      <div class="timer-ring-wrapper">
+        <svg class="timer-ring" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- 背景トラック -->
+          <circle
+            class="ring-track"
+            cx="100" cy="100" r="80"
+            fill="none"
+            stroke-width="14"
+          />
+          <!-- 進捗リング -->
+          <circle
+            class="ring-progress"
+            id="ring-progress"
+            cx="100" cy="100" r="80"
+            fill="none"
+            stroke-width="14"
+            stroke-linecap="round"
+            transform="rotate(-90 100 100)"
+          />
+        </svg>
+        <!-- タイマー表示 -->
+        <div class="timer-display" id="timer-display">25:00</div>
+      </div>
+
+      <!-- ボタン -->
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-start">開始</button>
+        <button class="btn btn-outline" id="btn-reset">リセット</button>
+      </div>
+
+      <!-- 今日の進捗 -->
+      <div class="progress-section">
+        <p class="progress-title">今日の進捗</p>
+        <div class="progress-stats">
+          <div class="stat">
+            <span class="stat-value" id="stat-completed">0</span>
+            <span class="stat-label">完了</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value stat-accent" id="stat-minutes">0分</span>
+            <span class="stat-label">集中時間</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/renderer.js"></script>
+  <script src="/static/js/timer.js"></script>
+  <script src="/static/js/api.js"></script>
+  <script>
+    // ---- 初期化 ----
+    const api = new ApiClient();
+    const renderer = new CircleRenderer('ring-progress', 'timer-display', 'phase-label');
+
+    const statCompleted = document.getElementById('stat-completed');
+    const statMinutes   = document.getElementById('stat-minutes');
+
+    /** total_minutes を「X時間Y分」または「Y分」形式に変換 */
+    function formatMinutes(total) {
+      const h = Math.floor(total / 60);
+      const m = total % 60;
+      if (h > 0 && m > 0) return `${h}時間${m}分`;
+      if (h > 0)          return `${h}時間`;
+      return `${m}分`;
+    }
+
+    /** 今日の進捗を API から取得して表示する */
+    async function refreshStats() {
+      try {
+        const stats = await api.getTodayStats();
+        statCompleted.textContent = stats.completed;
+        statMinutes.textContent   = formatMinutes(stats.total_minutes);
+      } catch (e) {
+        console.error('進捗取得エラー:', e);
+      }
+    }
+
+    const timer = new PomodoroTimer({
+      onTick(secondsLeft, totalSeconds) {
+        renderer.update(secondsLeft, totalSeconds);
+      },
+      onPhaseChange(phase) {
+        renderer.setPhaseLabel(phase);
+        // フェーズ切り替え時にボタンを「開始」に戻す
+        btnStart.textContent = '開始';
+      },
+      async onComplete(durationMinutes) {
+        try {
+          await api.postSession(durationMinutes);
+        } catch (e) {
+          console.error('セッション保存エラー:', e);
+        }
+        await refreshStats();
+      },
+    });
+
+    // 初期表示
+    renderer.update(timer.secondsLeft, timer.totalSeconds);
+    renderer.setPhaseLabel(timer.phase);
+
+    // ページ読み込み時に今日の進捗を表示
+    refreshStats();
+
+    // ---- ボタン操作 ----
+    const btnStart = document.getElementById('btn-start');
+    const btnReset = document.getElementById('btn-reset');
+
+    btnStart.addEventListener('click', () => {
+      if (timer.isRunning) {
+        timer.pause();
+        btnStart.textContent = '再開';
+      } else {
+        timer.start();
+        btnStart.textContent = '一時停止';
+      }
+    });
+
+    btnReset.addEventListener('click', () => {
+      timer.reset();
+      btnStart.textContent = '開始';
+    });
+  </script>
+</body>
+</html>
