@@ -1,0 +1,192 @@
+/* ===== リセット & 基本 ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: transparent;
+}
+
+/* ===== 背景 ===== */
+.app-bg {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #7c6fe3 0%, #9b8eef 50%, #b3a8f5 100%);
+}
+
+/* ===== カード ===== */
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 340px;
+  padding: 0 0 28px 0;
+  box-shadow: 0 12px 40px rgba(80, 60, 180, 0.25);
+  overflow: hidden;
+}
+
+/* ===== タイトルバー ===== */
+.title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid #f0eef8;
+}
+
+.title-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #3d3060;
+}
+
+.window-controls {
+  display: flex;
+  gap: 10px;
+  color: #bbb;
+  font-size: 13px;
+  cursor: default;
+  user-select: none;
+}
+
+/* ===== フェーズラベル ===== */
+.phase-label {
+  text-align: center;
+  font-size: 14px;
+  color: #888;
+  margin-top: 22px;
+  letter-spacing: 0.04em;
+}
+
+/* ===== 円形タイマー ===== */
+.timer-ring-wrapper {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 12px auto 8px;
+}
+
+.timer-ring {
+  width: 100%;
+  height: 100%;
+}
+
+/* 背景トラック */
+.ring-track {
+  stroke: #eeeaf8;
+}
+
+/* 進捗リング */
+.ring-progress {
+  stroke: #7c6fe3;
+  stroke-dasharray: 502.65;   /* 2π × 80 ≈ 502.65 */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.5s linear;
+}
+
+/* タイマー数字 */
+.timer-display {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: 700;
+  color: #2e2060;
+  letter-spacing: -0.02em;
+}
+
+/* ===== ボタン行 ===== */
+.btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 18px 0 22px;
+}
+
+.btn {
+  width: 120px;
+  height: 46px;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  border: none;
+  outline: none;
+}
+
+.btn:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+/* 塗りつぶし（開始/一時停止） */
+.btn-primary {
+  background: #7c6fe3;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(124, 111, 227, 0.40);
+}
+
+.btn-primary:hover {
+  background: #6a5dcf;
+}
+
+/* アウトライン（リセット） */
+.btn-outline {
+  background: #fff;
+  color: #7c6fe3;
+  border: 2px solid #c9c2f0;
+}
+
+.btn-outline:hover {
+  background: #f5f3ff;
+}
+
+/* ===== 今日の進捗 ===== */
+.progress-section {
+  background: #f5f3ff;
+  border-radius: 14px;
+  margin: 0 20px;
+  padding: 16px 24px 14px;
+}
+
+.progress-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #5a4d90;
+  margin-bottom: 12px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-around;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2e2060;
+  line-height: 1;
+}
+
+.stat-accent {
+  color: #7c6fe3;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #888;
+}
