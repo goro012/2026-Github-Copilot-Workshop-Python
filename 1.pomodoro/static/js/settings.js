@@ -69,6 +69,7 @@ class Settings {
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
         osc.start(t);
         osc.stop(t + 0.05);
+        osc.addEventListener('ended', () => { osc.disconnect(); gain.disconnect(); });
       } else if (type === 'start') {
         osc.type            = 'sine';
         osc.frequency.value = 523; // C5
@@ -76,6 +77,7 @@ class Settings {
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
         osc.start(t);
         osc.stop(t + 0.3);
+        osc.addEventListener('ended', () => { osc.disconnect(); gain.disconnect(); });
       } else if (type === 'end') {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(523, t);        // C5
@@ -85,6 +87,7 @@ class Settings {
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
         osc.start(t);
         osc.stop(t + 0.5);
+        osc.addEventListener('ended', () => { osc.disconnect(); gain.disconnect(); });
       }
     } catch (e) {
       console.warn('サウンド再生エラー:', e);
@@ -94,9 +97,18 @@ class Settings {
   // ---- 内部メソッド ----
 
   _load() {
+    const VALID_THEMES    = ['light', 'dark', 'focus'];
+    const VALID_WORK      = [15, 25, 35, 45];
+    const VALID_BREAK     = [5, 10, 15];
     try {
-      const raw = localStorage.getItem('pomodoroSettings');
-      return raw ? { ...this._defaults, ...JSON.parse(raw) } : { ...this._defaults };
+      const raw  = localStorage.getItem('pomodoroSettings');
+      const saved = raw ? JSON.parse(raw) : {};
+      const merged = { ...this._defaults, ...saved };
+      // 不正な値はデフォルトに戻す
+      if (!VALID_THEMES.includes(merged.theme))         merged.theme             = this._defaults.theme;
+      if (!VALID_WORK.includes(merged.workMinutes))     merged.workMinutes       = this._defaults.workMinutes;
+      if (!VALID_BREAK.includes(merged.shortBreakMinutes)) merged.shortBreakMinutes = this._defaults.shortBreakMinutes;
+      return merged;
     } catch {
       return { ...this._defaults };
     }
@@ -104,6 +116,14 @@ class Settings {
 
   _persist() {
     localStorage.setItem('pomodoroSettings', JSON.stringify(this._data));
+  }
+
+  /** AudioContext を解放する（ページアンロード時などに使用） */
+  destroy() {
+    if (this._audioCtx) {
+      this._audioCtx.close();
+      this._audioCtx = null;
+    }
   }
 
   _getAudioCtx() {

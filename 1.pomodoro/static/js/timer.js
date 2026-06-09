@@ -16,7 +16,7 @@ class PomodoroTimer {
     this.PHASES = {
       work:        workMinutes * 60,
       short_break: shortBreakMinutes * 60,
-      long_break:  Math.max(shortBreakMinutes * 3, 15) * 60,
+      long_break:  this._longBreakSeconds(shortBreakMinutes),
     };
     this.POMODOROS_BEFORE_LONG = 4;
 
@@ -76,7 +76,7 @@ class PomodoroTimer {
     this.PHASES = {
       work:        workMinutes * 60,
       short_break: shortBreakMinutes * 60,
-      long_break:  Math.max(shortBreakMinutes * 3, 15) * 60,
+      long_break:  this._longBreakSeconds(shortBreakMinutes),
     };
     this._phase         = 'work';
     this._pomodoroCount = 0;
@@ -86,6 +86,15 @@ class PomodoroTimer {
   }
 
   // ---- 内部メソッド ----
+
+  /**
+   * 短い休憩時間から長い休憩時間（秒）を算出する。
+   * @param {number} shortBreakMinutes
+   * @returns {number}
+   */
+  _longBreakSeconds(shortBreakMinutes) {
+    return Math.max(shortBreakMinutes * 3, 15) * 60;
+  }
 
   _tick() {
     this._secondsLeft--;

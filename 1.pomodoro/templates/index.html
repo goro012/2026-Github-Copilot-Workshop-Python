@@ -8,8 +8,10 @@
   <script>
     (function () {
       try {
-        var s = JSON.parse(localStorage.getItem('pomodoroSettings'));
-        if (s && s.theme) document.documentElement.setAttribute('data-theme', s.theme);
+        var savedSettings = JSON.parse(localStorage.getItem('pomodoroSettings'));
+        if (savedSettings && savedSettings.theme) {
+          document.documentElement.setAttribute('data-theme', savedSettings.theme);
+        }
       } catch (e) {}
     })();
   </script>
@@ -325,6 +327,9 @@
       btnStart.textContent = '開始';
       closeSettings();
     });
+
+    // ページアンロード時に AudioContext を解放する
+    window.addEventListener('pagehide', () => settings.destroy());
   </script>
 </body>
 </html>
