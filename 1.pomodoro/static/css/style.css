@@ -186,7 +186,213 @@ body {
   color: #7c6fe3;
 }
 
+.streak-value {
+  color: #e06c1a;
+}
+
 .stat-label {
   font-size: 12px;
   color: #888;
+}
+
+/* ===== ゲーミフィケーション（レベル・XP） ===== */
+.gamification-section {
+  margin: 14px 20px 0;
+}
+
+.level-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.level-badge {
+  flex-shrink: 0;
+  background: #7c6fe3;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 4px 10px;
+  letter-spacing: 0.02em;
+}
+
+.xp-bar-wrapper {
+  flex: 1;
+}
+
+.xp-bar-track {
+  height: 8px;
+  background: #eeeaf8;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c6fe3, #b3a8f5);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.xp-label {
+  display: block;
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+  text-align: right;
+}
+
+/* ===== バッジセクション ===== */
+.badges-section {
+  margin: 14px 20px 0;
+}
+
+.badges-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #5a4d90;
+  margin-bottom: 8px;
+}
+
+.badges-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badge-item {
+  background: #ede9fb;
+  color: #5a4d90;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 4px 10px;
+  cursor: default;
+  transition: background 0.15s;
+}
+
+.badge-item:hover {
+  background: #d9d3f5;
+}
+
+.badge-empty {
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* ===== 統計トグルボタン ===== */
+.stats-toggle-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.btn-stats-toggle {
+  background: none;
+  border: none;
+  color: #7c6fe3;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.btn-stats-toggle:hover {
+  background: #f0edf8;
+}
+
+/* ===== 統計パネル ===== */
+.stats-panel {
+  margin: 10px 20px 0;
+  border-top: 1px solid #f0eef8;
+  padding-top: 12px;
+}
+
+.stats-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.stats-tab {
+  flex: 1;
+  padding: 6px 0;
+  border: 1px solid #c9c2f0;
+  border-radius: 20px;
+  background: #fff;
+  color: #7c6fe3;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.stats-tab.active {
+  background: #7c6fe3;
+  color: #fff;
+  border-color: #7c6fe3;
+}
+
+.stats-tab:hover:not(.active) {
+  background: #f5f3ff;
+}
+
+.stats-chart-area {
+  height: 100px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.chart-loading {
+  font-size: 13px;
+  color: #aaa;
+  margin: auto;
+}
+
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+
+.chart-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.chart-bar-wrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.chart-bar {
+  width: 100%;
+  min-height: 2px;
+  background: #7c6fe3;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.3s ease;
+}
+
+.chart-bar-label {
+  font-size: 9px;
+  color: #aaa;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.stats-summary {
+  text-align: center;
+  font-size: 13px;
+  color: #5a4d90;
+  margin-top: 8px;
 }

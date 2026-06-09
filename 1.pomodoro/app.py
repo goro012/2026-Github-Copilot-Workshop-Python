@@ -2,7 +2,7 @@ from flask import Flask, jsonify, render_template, request
 
 from config import Config
 from models import db
-from services import PomodoroService
+from services import GamificationService, PomodoroService
 
 
 def create_app(config=None):
@@ -33,6 +33,21 @@ def create_app(config=None):
     @app.route("/api/sessions/today", methods=["GET"])
     def today_sessions():
         stats = PomodoroService().get_today_stats()
+        return jsonify(stats)
+
+    @app.route("/api/gamification", methods=["GET"])
+    def gamification():
+        stats = GamificationService().get_gamification_stats()
+        return jsonify(stats)
+
+    @app.route("/api/stats/weekly", methods=["GET"])
+    def weekly_stats():
+        stats = GamificationService().get_weekly_stats()
+        return jsonify(stats)
+
+    @app.route("/api/stats/monthly", methods=["GET"])
+    def monthly_stats():
+        stats = GamificationService().get_monthly_stats()
         return jsonify(stats)
 
     return app
