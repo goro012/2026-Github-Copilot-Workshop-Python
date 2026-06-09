@@ -65,7 +65,49 @@
             <span class="stat-value stat-accent" id="stat-minutes">0分</span>
             <span class="stat-label">集中時間</span>
           </div>
+          <div class="stat">
+            <span class="stat-value streak-value" id="stat-streak">0</span>
+            <span class="stat-label">🔥 連続日数</span>
+          </div>
         </div>
+      </div>
+
+      <!-- レベル・XP セクション -->
+      <div class="gamification-section">
+        <div class="level-row">
+          <span class="level-badge" id="level-badge">Lv.1</span>
+          <div class="xp-bar-wrapper">
+            <div class="xp-bar-track">
+              <div class="xp-bar-fill" id="xp-bar-fill" style="width: 0%"></div>
+            </div>
+            <span class="xp-label" id="xp-label">0 / 500 XP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- バッジセクション -->
+      <div class="badges-section" id="badges-section">
+        <p class="badges-title">獲得バッジ</p>
+        <div class="badges-list" id="badges-list">
+          <span class="badge-empty">まだバッジがありません</span>
+        </div>
+      </div>
+
+      <!-- 統計トグルボタン -->
+      <div class="stats-toggle-row">
+        <button class="btn btn-stats-toggle" id="btn-stats-toggle">📊 統計を見る</button>
+      </div>
+
+      <!-- 統計パネル（トグル表示） -->
+      <div class="stats-panel" id="stats-panel" style="display:none">
+        <div class="stats-tabs">
+          <button class="stats-tab active" id="tab-weekly" data-tab="weekly">週間</button>
+          <button class="stats-tab" id="tab-monthly" data-tab="monthly">月間</button>
+        </div>
+        <div class="stats-chart-area" id="stats-chart-area">
+          <div class="chart-loading">読み込み中…</div>
+        </div>
+        <div class="stats-summary" id="stats-summary"></div>
       </div>
     </div>
   </div>
@@ -81,6 +123,11 @@
 
     const statCompleted = document.getElementById('stat-completed');
     const statMinutes   = document.getElementById('stat-minutes');
+    const statStreak    = document.getElementById('stat-streak');
+    const levelBadge    = document.getElementById('level-badge');
+    const xpBarFill     = document.getElementById('xp-bar-fill');
+    const xpLabel       = document.getElementById('xp-label');
+    const badgesList    = document.getElementById('badges-list');
 
     /** total_minutes を「X時間Y分」または「Y分」形式に変換 */
     function formatMinutes(total) {
@@ -102,6 +149,30 @@
       }
     }
 
+    /** ゲーミフィケーション情報を API から取得して表示する */
+    async function refreshGamification() {
+      try {
+        const g = await api.getGamification();
+        statStreak.textContent = g.streak;
+        levelBadge.textContent = `Lv.${g.level}`;
+        const pct = g.xp_per_level > 0
+          ? Math.round((g.xp_in_level / g.xp_per_level) * 100)
+          : 0;
+        xpBarFill.style.width = `${pct}%`;
+        xpLabel.textContent = `${g.xp_in_level} / ${g.xp_per_level} XP`;
+
+        if (g.badges && g.badges.length > 0) {
+          badgesList.innerHTML = g.badges.map(b =>
+            `<span class="badge-item" title="${b.description}">${b.name}</span>`
+          ).join('');
+        } else {
+          badgesList.innerHTML = '<span class="badge-empty">まだバッジがありません</span>';
+        }
+      } catch (e) {
+        console.error('ゲーミフィケーション取得エラー:', e);
+      }
+    }
+
     const timer = new PomodoroTimer({
       onTick(secondsLeft, totalSeconds) {
         renderer.update(secondsLeft, totalSeconds);
@@ -120,6 +191,7 @@
           console.error('セッション保存エラー:', e);
         }
         await refreshStats();
+        await refreshGamification();
       },
     });
 
@@ -128,8 +200,9 @@
     renderer.setPhaseLabel(timer.phase);
     appBg.classList.toggle('working', timer.phase === 'work');
 
-    // ページ読み込み時に今日の進捗を表示
+    // ページ読み込み時に今日の進捗・ゲーミフィケーション情報を表示
     refreshStats();
+    refreshGamification();
 
     // ---- ボタン操作 ----
     const btnStart = document.getElementById('btn-start');
@@ -148,6 +221,63 @@
     btnReset.addEventListener('click', () => {
       timer.reset();
       btnStart.textContent = '開始';
+    });
+
+    // ---- 統計パネル ----
+    const btnStatsToggle = document.getElementById('btn-stats-toggle');
+    const statsPanel     = document.getElementById('stats-panel');
+    const chartArea      = document.getElementById('stats-chart-area');
+    const statsSummary   = document.getElementById('stats-summary');
+    let statsVisible     = false;
+    let activeTab        = 'weekly';
+
+    function renderBarChart(days) {
+      const maxCompleted = Math.max(...days.map(d => d.completed), 1);
+      return days.map(d => {
+        const pct = Math.round((d.completed / maxCompleted) * 100);
+        const label = d.date.substring(5, 10); // MM-DD
+        return `
+          <div class="chart-bar-col">
+            <div class="chart-bar-wrap">
+              <div class="chart-bar" style="height:${pct}%" title="${d.completed}回"></div>
+            </div>
+            <span class="chart-bar-label">${label}</span>
+          </div>`;
+      }).join('');
+    }
+
+    async function loadStats(tab) {
+      chartArea.innerHTML = '<div class="chart-loading">読み込み中…</div>';
+      statsSummary.innerHTML = '';
+      try {
+        const data = tab === 'weekly'
+          ? await api.getWeeklyStats()
+          : await api.getMonthlyStats();
+
+        chartArea.innerHTML = `<div class="chart-bars">${renderBarChart(data.days)}</div>`;
+        statsSummary.innerHTML =
+          `<span>合計 <strong>${data.total_completed}</strong> 回完了 ／ ` +
+          `<strong>${formatMinutes(data.total_minutes)}</strong> 集中</span>`;
+      } catch (e) {
+        chartArea.innerHTML = '<div class="chart-loading">取得に失敗しました</div>';
+        console.error('統計取得エラー:', e);
+      }
+    }
+
+    btnStatsToggle.addEventListener('click', () => {
+      statsVisible = !statsVisible;
+      statsPanel.style.display = statsVisible ? 'block' : 'none';
+      btnStatsToggle.textContent = statsVisible ? '📊 統計を閉じる' : '📊 統計を見る';
+      if (statsVisible) loadStats(activeTab);
+    });
+
+    document.querySelectorAll('.stats-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.stats-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        activeTab = tab.dataset.tab;
+        if (statsVisible) loadStats(activeTab);
+      });
     });
   </script>
 </body>

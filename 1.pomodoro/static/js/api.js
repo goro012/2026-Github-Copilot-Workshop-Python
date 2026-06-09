@@ -30,4 +30,40 @@ class ApiClient {
     }
     return res.json();
   }
+
+  /**
+   * ゲーミフィケーション統計（XP・レベル・ストリーク・バッジ）を取得する。
+   * @returns {Promise<object>}
+   */
+  async getGamification() {
+    const res = await fetch('/api/gamification');
+    if (!res.ok) {
+      throw new Error(`GET /api/gamification failed: ${res.status}`);
+    }
+    return res.json();
+  }
+
+  /**
+   * 週間統計（過去7日）を取得する。
+   * @returns {Promise<object>}
+   */
+  async getWeeklyStats() {
+    const res = await fetch('/api/stats/weekly');
+    if (!res.ok) {
+      throw new Error(`GET /api/stats/weekly failed: ${res.status}`);
+    }
+    return res.json();
+  }
+
+  /**
+   * 月間統計（過去30日）を取得する。
+   * @returns {Promise<object>}
+   */
+  async getMonthlyStats() {
+    const res = await fetch('/api/stats/monthly');
+    if (!res.ok) {
+      throw new Error(`GET /api/stats/monthly failed: ${res.status}`);
+    }
+    return res.json();
+  }
 }
