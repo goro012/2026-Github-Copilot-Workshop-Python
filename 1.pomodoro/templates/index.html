@@ -77,6 +77,7 @@
     // ---- 初期化 ----
     const api = new ApiClient();
     const renderer = new CircleRenderer('ring-progress', 'timer-display', 'phase-label');
+    const appBg = document.querySelector('.app-bg');
 
     const statCompleted = document.getElementById('stat-completed');
     const statMinutes   = document.getElementById('stat-minutes');
@@ -109,6 +110,8 @@
         renderer.setPhaseLabel(phase);
         // フェーズ切り替え時にボタンを「開始」に戻す
         btnStart.textContent = '開始';
+        // 集中時間中のみ背景エフェクトを有効化
+        appBg.classList.toggle('working', phase === 'work');
       },
       async onComplete(durationMinutes) {
         try {
@@ -123,6 +126,7 @@
     // 初期表示
     renderer.update(timer.secondsLeft, timer.totalSeconds);
     renderer.setPhaseLabel(timer.phase);
+    appBg.classList.toggle('working', timer.phase === 'work');
 
     // ページ読み込み時に今日の進捗を表示
     refreshStats();
