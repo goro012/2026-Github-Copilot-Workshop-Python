@@ -10,22 +10,143 @@ body {
   background: transparent;
 }
 
+/* ===== テーマ変数（ライト：デフォルト） ===== */
+:root,
+[data-theme="light"] {
+  --bg-start:             #7c6fe3;
+  --bg-mid:               #9b8eef;
+  --bg-end:               #b3a8f5;
+  --card-bg:              #ffffff;
+  --card-shadow:          rgba(80, 60, 180, 0.25);
+  --title-border:         #f0eef8;
+  --title-text:           #3d3060;
+  --controls-color:       #bbb;
+  --phase-label:          #888;
+  --ring-track:           #eeeaf8;
+  --ring-progress:        #7c6fe3;
+  --timer-color:          #2e2060;
+  --btn-primary-bg:       #7c6fe3;
+  --btn-primary-hover:    #6a5dcf;
+  --btn-primary-text:     #fff;
+  --btn-outline-bg:       #fff;
+  --btn-outline-border:   #c9c2f0;
+  --btn-outline-color:    #7c6fe3;
+  --btn-outline-hover-bg: #f5f3ff;
+  --progress-bg:          #f5f3ff;
+  --progress-title:       #5a4d90;
+  --stat-value:           #2e2060;
+  --stat-accent:          #7c6fe3;
+  --stat-label:           #888;
+  --settings-bg:          #ffffff;
+  --settings-border:      #f0eef8;
+  --settings-text:        #3d3060;
+  --settings-group-label: #5a4d90;
+  --option-btn-bg:        #f5f3ff;
+  --option-btn-border:    #c9c2f0;
+  --option-btn-text:      #5a4d90;
+  --option-btn-active-bg: #7c6fe3;
+  --option-btn-active-text: #fff;
+  --toggle-track-off:     #ddd;
+  --toggle-track-on:      #7c6fe3;
+  --overlay-bg:           rgba(0, 0, 0, 0.45);
+}
+
+/* ===== ダークテーマ ===== */
+[data-theme="dark"] {
+  --bg-start:             #1a1a2e;
+  --bg-mid:               #16213e;
+  --bg-end:               #0f3460;
+  --card-bg:              #1e1e32;
+  --card-shadow:          rgba(0, 0, 0, 0.5);
+  --title-border:         #2d2d4e;
+  --title-text:           #c9c2f0;
+  --controls-color:       #666;
+  --phase-label:          #9090b0;
+  --ring-track:           #2d2d4e;
+  --ring-progress:        #9b8eef;
+  --timer-color:          #e8e0ff;
+  --btn-primary-bg:       #7c6fe3;
+  --btn-primary-hover:    #9b8eef;
+  --btn-primary-text:     #fff;
+  --btn-outline-bg:       #1e1e32;
+  --btn-outline-border:   #4a4272;
+  --btn-outline-color:    #9b8eef;
+  --btn-outline-hover-bg: #2d2d4e;
+  --progress-bg:          #141425;
+  --progress-title:       #a89fdb;
+  --stat-value:           #e8e0ff;
+  --stat-accent:          #9b8eef;
+  --stat-label:           #9090b0;
+  --settings-bg:          #1e1e32;
+  --settings-border:      #2d2d4e;
+  --settings-text:        #c9c2f0;
+  --settings-group-label: #a89fdb;
+  --option-btn-bg:        #2d2d4e;
+  --option-btn-border:    #4a4272;
+  --option-btn-text:      #a89fdb;
+  --option-btn-active-bg: #7c6fe3;
+  --option-btn-active-text: #fff;
+  --toggle-track-off:     #4a4272;
+  --toggle-track-on:      #9b8eef;
+  --overlay-bg:           rgba(0, 0, 0, 0.65);
+}
+
+/* ===== フォーカス（ミニマル）テーマ ===== */
+[data-theme="focus"] {
+  --bg-start:             #e8e8e8;
+  --bg-mid:               #f0f0f0;
+  --bg-end:               #e8e8e8;
+  --card-bg:              #ffffff;
+  --card-shadow:          rgba(0, 0, 0, 0.10);
+  --title-border:         #e8e8e8;
+  --title-text:           #333;
+  --controls-color:       #bbb;
+  --phase-label:          #888;
+  --ring-track:           #e8e8e8;
+  --ring-progress:        #333;
+  --timer-color:          #222;
+  --btn-primary-bg:       #333;
+  --btn-primary-hover:    #111;
+  --btn-primary-text:     #fff;
+  --btn-outline-bg:       #fff;
+  --btn-outline-border:   #bbb;
+  --btn-outline-color:    #333;
+  --btn-outline-hover-bg: #f5f5f5;
+  --progress-bg:          #f5f5f5;
+  --progress-title:       #555;
+  --stat-value:           #222;
+  --stat-accent:          #333;
+  --stat-label:           #888;
+  --settings-bg:          #ffffff;
+  --settings-border:      #e8e8e8;
+  --settings-text:        #333;
+  --settings-group-label: #555;
+  --option-btn-bg:        #f5f5f5;
+  --option-btn-border:    #bbb;
+  --option-btn-text:      #555;
+  --option-btn-active-bg: #333;
+  --option-btn-active-text: #fff;
+  --toggle-track-off:     #ddd;
+  --toggle-track-on:      #333;
+  --overlay-bg:           rgba(0, 0, 0, 0.35);
+}
+
 /* ===== 背景 ===== */
 .app-bg {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #7c6fe3 0%, #9b8eef 50%, #b3a8f5 100%);
+  background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
 }
 
 /* ===== カード ===== */
 .card {
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 20px;
   width: 340px;
   padding: 0 0 28px 0;
-  box-shadow: 0 12px 40px rgba(80, 60, 180, 0.25);
+  box-shadow: 0 12px 40px var(--card-shadow);
   overflow: hidden;
 }
 
@@ -35,29 +156,45 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 14px 20px 12px;
-  border-bottom: 1px solid #f0eef8;
+  border-bottom: 1px solid var(--title-border);
 }
 
 .title-text {
   font-size: 15px;
   font-weight: 600;
-  color: #3d3060;
+  color: var(--title-text);
 }
 
 .window-controls {
   display: flex;
   gap: 10px;
-  color: #bbb;
+  color: var(--controls-color);
   font-size: 13px;
   cursor: default;
   user-select: none;
+}
+
+/* 設定ボタン（歯車アイコン） */
+.btn-settings {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--controls-color);
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.btn-settings:hover {
+  color: var(--btn-primary-bg);
 }
 
 /* ===== フェーズラベル ===== */
 .phase-label {
   text-align: center;
   font-size: 14px;
-  color: #888;
+  color: var(--phase-label);
   margin-top: 22px;
   letter-spacing: 0.04em;
 }
@@ -77,12 +214,12 @@ body {
 
 /* 背景トラック */
 .ring-track {
-  stroke: #eeeaf8;
+  stroke: var(--ring-track);
 }
 
 /* 進捗リング */
 .ring-progress {
-  stroke: #7c6fe3;
+  stroke: var(--ring-progress);
   stroke-dasharray: 502.65;   /* 2π × 80 ≈ 502.65 */
   stroke-dashoffset: 0;
   transition: stroke-dashoffset 0.5s linear;
@@ -97,7 +234,7 @@ body {
   justify-content: center;
   font-size: 40px;
   font-weight: 700;
-  color: #2e2060;
+  color: var(--timer-color);
   letter-spacing: -0.02em;
 }
 
@@ -128,29 +265,29 @@ body {
 
 /* 塗りつぶし（開始/一時停止） */
 .btn-primary {
-  background: #7c6fe3;
-  color: #fff;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   box-shadow: 0 4px 14px rgba(124, 111, 227, 0.40);
 }
 
 .btn-primary:hover {
-  background: #6a5dcf;
+  background: var(--btn-primary-hover);
 }
 
 /* アウトライン（リセット） */
 .btn-outline {
-  background: #fff;
-  color: #7c6fe3;
-  border: 2px solid #c9c2f0;
+  background: var(--btn-outline-bg);
+  color: var(--btn-outline-color);
+  border: 2px solid var(--btn-outline-border);
 }
 
 .btn-outline:hover {
-  background: #f5f3ff;
+  background: var(--btn-outline-hover-bg);
 }
 
 /* ===== 今日の進捗 ===== */
 .progress-section {
-  background: #f5f3ff;
+  background: var(--progress-bg);
   border-radius: 14px;
   margin: 0 20px;
   padding: 16px 24px 14px;
@@ -159,7 +296,7 @@ body {
 .progress-title {
   font-size: 13px;
   font-weight: 600;
-  color: #5a4d90;
+  color: var(--progress-title);
   margin-bottom: 12px;
 }
 
@@ -178,15 +315,183 @@ body {
 .stat-value {
   font-size: 28px;
   font-weight: 700;
-  color: #2e2060;
+  color: var(--stat-value);
   line-height: 1;
 }
 
 .stat-accent {
-  color: #7c6fe3;
+  color: var(--stat-accent);
 }
 
 .stat-label {
   font-size: 12px;
-  color: #888;
+  color: var(--stat-label);
 }
+
+/* ===== 設定モーダル ===== */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.settings-overlay[hidden] {
+  display: none;
+}
+
+.settings-modal {
+  background: var(--settings-bg);
+  border-radius: 20px;
+  width: 320px;
+  padding: 22px 24px 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  color: var(--settings-text);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.settings-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--settings-text);
+}
+
+.settings-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--controls-color);
+  line-height: 1;
+  padding: 2px 4px;
+  transition: color 0.15s;
+}
+
+.settings-close:hover {
+  color: var(--settings-text);
+}
+
+.settings-group {
+  margin-bottom: 18px;
+}
+
+.settings-group-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--settings-group-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* オプションボタン群（作業時間・休憩時間・テーマ） */
+.option-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.option-btn {
+  flex: 1;
+  min-width: 56px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid var(--option-btn-border);
+  background: var(--option-btn-bg);
+  color: var(--option-btn-text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.option-btn.active {
+  background: var(--option-btn-active-bg);
+  color: var(--option-btn-active-text);
+  border-color: var(--option-btn-active-bg);
+}
+
+.option-btn:hover:not(.active) {
+  border-color: var(--btn-primary-bg);
+  color: var(--btn-primary-bg);
+}
+
+/* サウンドトグル */
+.sound-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--settings-text);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* カスタムトグルスイッチ */
+.toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--toggle-track-off);
+  border-radius: 11px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked + .toggle-track {
+  background: var(--toggle-track-on);
+}
+
+.toggle-switch input:checked + .toggle-track::after {
+  transform: translateX(18px);
+}
+
+/* 適用ボタン */
+.settings-apply {
+  width: 100%;
+  margin-top: 4px;
+}
+

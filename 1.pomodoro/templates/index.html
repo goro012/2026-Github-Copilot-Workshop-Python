@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ポモドーロタイマー</title>
+  <!-- テーマのちらつき防止：ページ描画前にテーマを適用 -->
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('pomodoroSettings'));
+        if (s && s.theme) document.documentElement.setAttribute('data-theme', s.theme);
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -12,10 +21,13 @@
       <!-- タイトルバー -->
       <div class="title-bar">
         <span class="title-text">ポモドーロタイマー</span>
-        <div class="window-controls">
-          <span>&#8722;</span>
-          <span>&#9633;</span>
-          <span>&#10005;</span>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <button class="btn-settings" id="btn-settings" title="設定">&#9881;</button>
+          <div class="window-controls">
+            <span>&#8722;</span>
+            <span>&#9633;</span>
+            <span>&#10005;</span>
+          </div>
         </div>
       </div>
 
@@ -70,11 +82,88 @@
     </div>
   </div>
 
+  <!-- 設定モーダル -->
+  <div class="settings-overlay" id="settings-overlay" hidden>
+    <div class="settings-modal" role="dialog" aria-modal="true" aria-label="設定">
+      <div class="settings-header">
+        <span class="settings-title">設定</span>
+        <button class="settings-close" id="settings-close" aria-label="閉じる">&#10005;</button>
+      </div>
+
+      <!-- 作業時間 -->
+      <div class="settings-group">
+        <span class="settings-group-label">作業時間</span>
+        <div class="option-group" id="work-time-group">
+          <button class="option-btn" data-value="15">15分</button>
+          <button class="option-btn" data-value="25">25分</button>
+          <button class="option-btn" data-value="35">35分</button>
+          <button class="option-btn" data-value="45">45分</button>
+        </div>
+      </div>
+
+      <!-- 休憩時間 -->
+      <div class="settings-group">
+        <span class="settings-group-label">休憩時間</span>
+        <div class="option-group" id="break-time-group">
+          <button class="option-btn" data-value="5">5分</button>
+          <button class="option-btn" data-value="10">10分</button>
+          <button class="option-btn" data-value="15">15分</button>
+        </div>
+      </div>
+
+      <!-- テーマ -->
+      <div class="settings-group">
+        <span class="settings-group-label">テーマ</span>
+        <div class="option-group" id="theme-group">
+          <button class="option-btn" data-value="light">ライト</button>
+          <button class="option-btn" data-value="dark">ダーク</button>
+          <button class="option-btn" data-value="focus">フォーカス</button>
+        </div>
+      </div>
+
+      <!-- サウンド -->
+      <div class="settings-group">
+        <span class="settings-group-label">サウンド</span>
+        <div class="sound-toggles">
+          <label class="toggle-row">
+            <span>開始音</span>
+            <span class="toggle-switch">
+              <input type="checkbox" id="sound-start">
+              <span class="toggle-track"></span>
+            </span>
+          </label>
+          <label class="toggle-row">
+            <span>終了音</span>
+            <span class="toggle-switch">
+              <input type="checkbox" id="sound-end">
+              <span class="toggle-track"></span>
+            </span>
+          </label>
+          <label class="toggle-row">
+            <span>Tick音</span>
+            <span class="toggle-switch">
+              <input type="checkbox" id="sound-tick">
+              <span class="toggle-track"></span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 適用ボタン -->
+      <button class="btn btn-primary settings-apply" id="settings-apply">適用</button>
+    </div>
+  </div>
+
+  <script src="/static/js/settings.js"></script>
   <script src="/static/js/renderer.js"></script>
   <script src="/static/js/timer.js"></script>
   <script src="/static/js/api.js"></script>
   <script>
-    // ---- 初期化 ----
+    // ---- 設定の初期化 ----
+    const settings = new Settings();
+    settings.applyTheme();
+
+    // ---- タイマー・レンダラーの初期化 ----
     const api = new ApiClient();
     const renderer = new CircleRenderer('ring-progress', 'timer-display', 'phase-label');
 
@@ -102,13 +191,16 @@
     }
 
     const timer = new PomodoroTimer({
+      workMinutes:       settings.workMinutes,
+      shortBreakMinutes: settings.shortBreakMinutes,
       onTick(secondsLeft, totalSeconds) {
         renderer.update(secondsLeft, totalSeconds);
+        settings.playSound('tick');
       },
       onPhaseChange(phase) {
         renderer.setPhaseLabel(phase);
-        // フェーズ切り替え時にボタンを「開始」に戻す
         btnStart.textContent = '開始';
+        settings.playSound('end');
       },
       async onComplete(durationMinutes) {
         try {
@@ -138,12 +230,100 @@
       } else {
         timer.start();
         btnStart.textContent = '一時停止';
+        settings.playSound('start');
       }
     });
 
     btnReset.addEventListener('click', () => {
       timer.reset();
       btnStart.textContent = '開始';
+    });
+
+    // ---- 設定パネル ----
+    const overlay       = document.getElementById('settings-overlay');
+    const btnSettings   = document.getElementById('btn-settings');
+    const btnClose      = document.getElementById('settings-close');
+    const btnApply      = document.getElementById('settings-apply');
+
+    const workGroup     = document.getElementById('work-time-group');
+    const breakGroup    = document.getElementById('break-time-group');
+    const themeGroup    = document.getElementById('theme-group');
+    const chkSoundStart = document.getElementById('sound-start');
+    const chkSoundEnd   = document.getElementById('sound-end');
+    const chkSoundTick  = document.getElementById('sound-tick');
+
+    /** オプションボタン群の active クラスを更新する */
+    function setActive(group, value) {
+      group.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === String(value));
+      });
+    }
+
+    /** 現在の設定値をパネルの UI に反映する */
+    function syncPanelToSettings() {
+      setActive(workGroup,  settings.workMinutes);
+      setActive(breakGroup, settings.shortBreakMinutes);
+      setActive(themeGroup, settings.theme);
+      chkSoundStart.checked = settings.soundStart;
+      chkSoundEnd.checked   = settings.soundEnd;
+      chkSoundTick.checked  = settings.soundTick;
+    }
+
+    /** オプションボタン群のクリックハンドラを登録する */
+    function bindOptionGroup(group) {
+      group.addEventListener('click', e => {
+        const btn = e.target.closest('.option-btn');
+        if (!btn) return;
+        setActive(group, btn.dataset.value);
+      });
+    }
+
+    bindOptionGroup(workGroup);
+    bindOptionGroup(breakGroup);
+    bindOptionGroup(themeGroup);
+
+    /** 設定パネルを開く */
+    btnSettings.addEventListener('click', () => {
+      syncPanelToSettings();
+      overlay.hidden = false;
+    });
+
+    /** 設定パネルを閉じる */
+    function closeSettings() {
+      overlay.hidden = true;
+    }
+
+    btnClose.addEventListener('click', closeSettings);
+
+    // オーバーレイ背景クリックで閉じる
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) closeSettings();
+    });
+
+    // Esc キーで閉じる
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !overlay.hidden) closeSettings();
+    });
+
+    /** 設定を保存してタイマーに反映する */
+    btnApply.addEventListener('click', () => {
+      const workMin  = parseInt(workGroup.querySelector('.option-btn.active')?.dataset.value  ?? settings.workMinutes, 10);
+      const breakMin = parseInt(breakGroup.querySelector('.option-btn.active')?.dataset.value ?? settings.shortBreakMinutes, 10);
+      const theme    = themeGroup.querySelector('.option-btn.active')?.dataset.value ?? settings.theme;
+
+      settings.save({
+        workMinutes:       workMin,
+        shortBreakMinutes: breakMin,
+        theme,
+        soundStart: chkSoundStart.checked,
+        soundEnd:   chkSoundEnd.checked,
+        soundTick:  chkSoundTick.checked,
+      });
+
+      settings.applyTheme();
+      timer.configure(workMin, breakMin);
+      btnStart.textContent = '開始';
+      closeSettings();
     });
   </script>
 </body>

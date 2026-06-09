@@ -8,13 +8,15 @@ class PomodoroTimer {
    * @param {function(number, number, string): void} callbacks.onTick - 毎秒呼ばれる (secondsLeft, totalSeconds, phase)
    * @param {function(string): void} callbacks.onPhaseChange - フェーズ切り替え時 (newPhase)
    * @param {function(number): void} callbacks.onComplete - 作業セッション完了時 (durationMinutes)
+   * @param {number} [callbacks.workMinutes=25] - 作業フェーズの時間（分）
+   * @param {number} [callbacks.shortBreakMinutes=5] - 短い休憩の時間（分）
    */
-  constructor({ onTick, onPhaseChange, onComplete } = {}) {
+  constructor({ onTick, onPhaseChange, onComplete, workMinutes = 25, shortBreakMinutes = 5 } = {}) {
     // フェーズごとの時間（秒）
     this.PHASES = {
-      work:        25 * 60,
-      short_break:  5 * 60,
-      long_break:  15 * 60,
+      work:        workMinutes * 60,
+      short_break: shortBreakMinutes * 60,
+      long_break:  Math.max(shortBreakMinutes * 3, 15) * 60,
     };
     this.POMODOROS_BEFORE_LONG = 4;
 
@@ -57,6 +59,25 @@ class PomodoroTimer {
   /** 全状態をリセット（作業フェーズの先頭に戻る） */
   reset() {
     this.pause();
+    this._phase         = 'work';
+    this._pomodoroCount = 0;
+    this._secondsLeft   = this.PHASES.work;
+    this._onPhaseChange(this._phase);
+    this._onTick(this._secondsLeft, this.totalSeconds, this._phase);
+  }
+
+  /**
+   * 作業・休憩時間を新しい値で更新してリセットする。
+   * @param {number} workMinutes - 作業フェーズの時間（分）
+   * @param {number} shortBreakMinutes - 短い休憩の時間（分）
+   */
+  configure(workMinutes, shortBreakMinutes) {
+    this.pause();
+    this.PHASES = {
+      work:        workMinutes * 60,
+      short_break: shortBreakMinutes * 60,
+      long_break:  Math.max(shortBreakMinutes * 3, 15) * 60,
+    };
     this._phase         = 'work';
     this._pomodoroCount = 0;
     this._secondsLeft   = this.PHASES.work;
