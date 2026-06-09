@@ -168,7 +168,7 @@ class TestPomodoroEngineRunning(unittest.TestCase):
         engine.on_session_end = on_end
         engine.start()
         ended.wait(timeout=5)
-        self.assertTrue(ended.is_set, "session_end callback was not called")
+        self.assertTrue(ended.is_set(), "session_end callback was not called")
         self.assertEqual(received[0], SESSION_BREAK)
         self.assertEqual(engine.session_type, SESSION_BREAK)
 
