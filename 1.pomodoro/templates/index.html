@@ -231,7 +231,7 @@
       const maxCompleted = Math.max(...days.map(d => d.completed), 1);
       return days.map(d => {
         const pct = Math.round((d.completed / maxCompleted) * 100);
-        const label = d.date.slice(5); // MM-DD
+        const label = d.date.substring(5, 10); // MM-DD
         return `
           <div class="chart-bar-col">
             <div class="chart-bar-wrap">

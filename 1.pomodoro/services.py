@@ -116,7 +116,7 @@ class GamificationService:
         end_dt = datetime.combine(today, datetime.max.time())
         sessions = self.repo.find_sessions_in_range(start_dt, end_dt)
 
-        daily: dict[str, dict] = {}
+        daily: dict[str, dict[str, int | str]] = {}
         for i in range(7):
             d = str(start + timedelta(days=i))
             daily[d] = {"date": d, "completed": 0, "total_minutes": 0}
@@ -124,8 +124,8 @@ class GamificationService:
         for s in sessions:
             d = str(s.completed_at.date())
             if d in daily:
-                daily[d]["completed"] += 1
-                daily[d]["total_minutes"] += s.duration
+                daily[d]["completed"] += 1  # type: ignore[operator]
+                daily[d]["total_minutes"] += s.duration  # type: ignore[operator]
 
         days = list(daily.values())
         return {
@@ -141,7 +141,7 @@ class GamificationService:
         end_dt = datetime.combine(today, datetime.max.time())
         sessions = self.repo.find_sessions_in_range(start_dt, end_dt)
 
-        daily: dict[str, dict] = {}
+        daily: dict[str, dict[str, int | str]] = {}
         for i in range(30):
             d = str(start + timedelta(days=i))
             daily[d] = {"date": d, "completed": 0, "total_minutes": 0}
@@ -149,8 +149,8 @@ class GamificationService:
         for s in sessions:
             d = str(s.completed_at.date())
             if d in daily:
-                daily[d]["completed"] += 1
-                daily[d]["total_minutes"] += s.duration
+                daily[d]["completed"] += 1  # type: ignore[operator]
+                daily[d]["total_minutes"] += s.duration  # type: ignore[operator]
 
         days = list(daily.values())
         return {
